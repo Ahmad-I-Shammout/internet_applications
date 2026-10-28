@@ -1,0 +1,93 @@
+Hey! I wanted to walk you through how our new project codebase is organized. I know you're new to Next.js, so I've set this up in a very specific, clean way so it's easy for our whole team to work together without stepping on each other's toes or breaking the app. 
+
+Here is a simple breakdown of how everything works:
+
+1. The "Brain" vs. The "Router"
+In this project, we strictly separate the "pages" you visit from the actual "logic" of the app.
+
+- The Router (src/app/): 
+Think of this folder just as the map of our website. When a user visits a URL like `/dashboard`, Next.js looks for a file inside `src/app/dashboard/page.tsx`. However, these page files are "dumb". They shouldn't contain any complex code, data fetching, or heavy UI. All they do is import a View component from the "Brain" and display it on the screen.
+
+- The Brain (src/features/): 
+This is where the real work happens. Every major part of our app (like "users", "auth", "products") gets its own dedicated folder inside `src/features/`. For example, if we are building a page to list users, all the code for that lives in `src/features/users/`. 
+
+Inside `src/features/users/`, you will find:
+  - `components/`: The UI pieces (like a UsersTable or UserProfileCard).
+  - `apis/`: The code that actually talks to the backend (fetching data).
+  - `hooks/`: Custom logic and state management for users.
+  - `types/`: Data models describing what a User looks like.
+
+Example: The route file `src/app/users/page.tsx` will simply say: "Hey, render the <UserListView /> from the features/users folder!"
+
+2. Where Do Components Go?
+To keep things from getting messy, we place UI components in very specific folders based on what they do:
+- Feature Components (src/features/[name]/components/): Components that belong to one specific feature (like a "UserPasswordReset" form) go inside that feature's folder.
+- Shared Components (src/components/shared/): Custom components that are used all over the app (like a custom Navigation Bar, Sidebar, or a generic Layout wrapper) go here.
+- Shadcn UI Components (src/components/ui/): We use a library called Shadcn for basic atomic building blocks (like standard Buttons, Inputs, Checkboxes). All of these standard blocks live in this folder.
+
+3. Styling and Colors (globals.css)
+We want the app to look completely consistent, and we don't want to hunt down random hex colors hidden across 100 different files. 
+- Global Design Tokens: All of our custom colors, shadows, borders, and sizes are defined in ONE single file: `src/app/globals.css`. 
+- How to style: We use Tailwind CSS to style elements. But instead of typing a random arbitrary color in the code like `bg-[#333333]`, we add it to `globals.css` as a variable first (like `--custom-dark-gray`), and then use the class `bg-custom-dark-gray` in our components. If we ever need to change that gray color later, we just change it once in `globals.css`, and the whole app updates instantly!
+
+4. Text and Translations (i18n)
+We are building this app to be easily translated and managed. 
+- The Messages Folder: We never hardcode long paragraphs, page titles, or descriptions directly inside our code. Instead, we put all the main text inside `messages/ar.json`.
+- When writing a component, we use a translation hook to pull the text from that JSON file. The only exception is very minor things like an input placeholder (e.g., "Enter your name") or small button labels. Everything else goes into the dictionary!
+
+Summary Checklist for working on the app:
+- Adding a new page? Create the logic in `src/features/` and just import/display it in `src/app/`.
+- Need a basic building block like a button? Look in `src/components/ui/`.
+- Need to reuse a custom piece of UI everywhere? Put it in `src/components/shared/`.
+- Need a new brand color or shadow? Add it to `src/app/globals.css` first.
+- Writing a big paragraph or title? Put it in `messages/ar.json`.
+
+Let me know if anything doesn't make sense, and we can jump on a call to go over it!
+
+---
+
+أهلاً! أردت أن أشرح لك كيف تم تنظيم الكود في مشروعنا الجديد. أعلم أنك جديد على Next.js، لذلك قمت بإعداد هذا الهيكل بطريقة محددة ونظيفة جداً ليسهل على فريقنا بأكمله العمل معاً دون أن نتعارض مع بعضنا البعض أو نتسبب في تعطل التطبيق.
+
+إليك شرح مبسط لكيفية عمل كل شيء:
+
+1. "العقل" مقابل "الموجه" (Router)
+في هذا المشروع، نقوم بفصل "الصفحات" التي تزورها بشكل صارم عن "المنطق" الفعلي للتطبيق.
+
+- الموجه (src/app/):
+اعتبر هذا المجلد مجرد خريطة لموقعنا. عندما يزور المستخدم رابطاً مثل `/dashboard`، يبحث Next.js عن ملف داخل `src/app/dashboard/page.tsx`. ومع ذلك، فإن ملفات الصفحات هذه "غبية". لا ينبغي أن تحتوي على أي كود معقد، أو جلب بيانات، أو واجهة مستخدم ثقيلة. كل ما تفعله هو استيراد مكون عرض (View component) من "العقل" وعرضه على الشاشة.
+
+- العقل (src/features/):
+هنا يتم العمل الحقيقي. كل جزء رئيسي من تطبيقنا (مثل "users" أو "auth" أو "products") يحصل على مجلد مخصص له داخل `src/features/`. على سبيل المثال، إذا كنا نبني صفحة لعرض المستخدمين، فإن كل الكود الخاص بذلك يعيش في `src/features/users/`.
+
+داخل `src/features/users/`، ستجد:
+  - `components/`: أجزاء واجهة المستخدم (مثل UsersTable أو UserProfileCard).
+  - `apis/`: الكود الذي يتحدث فعلياً مع الواجهة الخلفية (جلب البيانات).
+  - `hooks/`: المنطق المخصص وإدارة الحالة الخاصة بالمستخدمين.
+  - `types/`: نماذج البيانات التي تصف شكل "المستخدم".
+
+مثال: ملف التوجيه `src/app/users/page.tsx` سيقول ببساطة: "مرحباً، قم بعرض <UserListView /> من مجلد features/users!"
+
+2. أين تذهب المكونات؟
+لمنع حدوث أي فوضى، نضع مكونات واجهة المستخدم في مجلدات محددة جداً بناءً على ما تفعله:
+- مكونات الميزات (src/features/[name]/components/): المكونات التي تنتمي إلى ميزة معينة (مثل نموذج "UserPasswordReset") توضع داخل مجلد تلك الميزة.
+- المكونات المشتركة (src/components/shared/): المكونات المخصصة التي يتم استخدامها في جميع أنحاء التطبيق (مثل شريط تنقل مخصص، شريط جانبي، أو غلاف تخطيط عام) توضع هنا.
+- مكونات Shadcn UI (في src/components/ui/): نستخدم مكتبة تسمى Shadcn لكتل البناء الأساسية (مثل الأزرار القياسية، حقول الإدخال، مربعات الاختيار). جميع هذه الكتل القياسية تعيش في هذا المجلد.
+
+3. التصميم والألوان (globals.css)
+نريد أن يبدو التطبيق متناسقاً تماماً، ولا نريد البحث عن ألوان عشوائية مخفية في 100 ملف مختلف.
+- رموز التصميم العامة: يتم تعريف جميع الألوان والظلال والحدود والأحجام المخصصة لدينا في ملف واحد فقط: `src/app/globals.css`.
+- كيفية التصميم: نستخدم Tailwind CSS لتصميم العناصر. ولكن بدلاً من كتابة لون عشوائي في الكود مثل `bg-[#333333]`، نضيفه إلى `globals.css` كمتغير أولاً (مثل `--custom-dark-gray`)، ثم نستخدم الفئة `bg-custom-dark-gray` في مكوناتنا. إذا احتجنا يوماً إلى تغيير هذا اللون الرمادي لاحقاً، نقوم بتغييره مرة واحدة فقط في `globals.css`، ويتحدث التطبيق بأكمله على الفور!
+
+4. النصوص والترجمات (i18n)
+نحن نبني هذا التطبيق ليكون سهل الترجمة والإدارة.
+- مجلد الرسائل (Messages): لا نقوم أبداً بكتابة فقرات طويلة أو عناوين صفحات أو أوصاف مباشرة داخل الكود. بدلاً من ذلك، نضع كل النص الأساسي داخل `messages/ar.json`.
+- عند كتابة مكون، نستخدم خطاف ترجمة (translation hook) لجلب النص من ملف JSON هذا. الاستثناء الوحيد هو الأشياء البسيطة جداً مثل نص العنصر النائب في حقل الإدخال (مثال: "أدخل اسمك") أو تسميات الأزرار الصغيرة. أي شيء آخر يذهب إلى القاموس!
+
+قائمة مرجعية سريعة للعمل على التطبيق:
+- إضافة صفحة جديدة؟ أنشئ المنطق في `src/features/` وقم فقط باستيراده/عرضه في `src/app/`.
+- تحتاج إلى كتلة بناء أساسية مثل زر؟ ابحث في `src/components/ui/`.
+- تحتاج إلى إعادة استخدام قطعة واجهة مستخدم مخصصة في كل مكان؟ ضعها في `src/components/shared/`.
+- تحتاج إلى لون علامة تجارية جديد أو ظل جديد؟ أضفه إلى `src/app/globals.css` أولاً.
+- تكتب فقرة كبيرة أو عنوان؟ ضعه في `messages/ar.json`.
+
+أخبرني إذا كان هناك أي شيء غير واضح، ويمكننا إجراء مكالمة لمراجعته!
